@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <title>ccNetViz</title>
+        <link href="css/styles.css" rel="stylesheet"/>
+
+        <script src="../js/ccNetViz.js"></script>
+        <script src="../js/color.js"></script>
+        <script src="../js/gl.js"></script>
+        <script src="../js/shader.js"></script>
+        <script src="../js/primitive.js"></script>
+        <script src="../js/textures.js"></script>
+        <script src="../js/texts.js"></script>
+        <script src="../js/quadTree.js"></script>
+        <script src="../js/layout/layout.js"></script>
+        <script src="../js/layout/random.js"></script>
+        <script src="../js/layout/force.js"></script>
+    </head>
+    <body>
+	<div class="container" style="width:100%;height:100%;">
+		<canvas id="tl"/>
+	</div>
+	<!-- <div class="container" style="right: 0; top: 0">
+		<canvas id="tr"/>
+	</div>
+	<div class="container" style="left: 0; bottom: 0">
+		<canvas id="bl"/>
+	</div>
+	<div class="container" style="right: 0; bottom: 0">
+		<canvas id="br"/>
+	</div> -->
+
+	<script type="text/javascript">
+   		function createGraph(graph, numNodes, numEdges, nodeStyles, edgeStyles) {
+   		    var nodes = [];
+        	for (var i = 0; i < numNodes; i++) {
+                nodes.push({
+                    label: "Node " + i,
+                    style: nodeStyles && nodeStyles[Math.floor(nodeStyles.length * Math.random())]
+                });
+            }
+            var edges = [];
+            for (var i = 0; i < numNodes; i++) {
+                var source = nodes[i];
+                var map = {};
+                map[i] = true;
+
+                for (var j = 0; j < numEdges; j++) {
+                    var target = i;
+                    while (map[target]) target = Math.floor(numNodes * Math.random());
+                    map[target] = true;
+                    edges.push({ source: source, target: nodes[target], style: edgeStyles && edgeStyles[Math.floor(edgeStyles.length * Math.random())] });
+                }
+            }
+            graph.set(nodes, edges, "force");
+            graph.draw();
+            graphs.push(graph);
+        }
+
+        var arrow = { texture: "images/arrow.png", hideSize: 2 };
+        var graphs = [];
+        createGraph(new ccNetViz(document.getElementById('tl'), { styles: { node: { label: { hideSize: 16 } }, edge: { arrow: arrow }, oddNode: { texture: "images/red.png" }, evenNode: { texture: "images/orange.png" } } }), 6, 2, ["oddNode", "evenNode"]);
+
+        var opt__ = 
+        { 
+            styles: { 
+                node: { 
+                    label: { 
+                        hideSize: 16 
+                    } 
+                }, 
+                edge: { 
+                    arrow: arrow 
+                }, 
+                oddNode: { 
+                    texture: "images/red.png" 
+                }, 
+                evenNode: { 
+                    texture: "images/orange.png" 
+                } 
+            } 
+        }
+        // createGraph(new ccNetViz(document.getElementById('tr'), { styles: { edge: { arrow: arrow }, node: { label: { hideSize: 16 }, texture: "images/orange.png" }, oddEdge: { color: "rgb(171, 237, 199)" }, evenEdge: { color: "rgb(244, 172, 164)" } } }), 1000, 1, null, ["oddEdge", "evenEdge"]);
+        // createGraph(new ccNetViz(document.getElementById('bl'), { styles: { edge: { arrow: arrow, width: 2, color: [0.5, 1, 0.5, 1] }, node: { label: {}, texture: "images/green.png" } } }), 60, 1);
+        // createGraph(new ccNetViz(document.getElementById('br'), { styles: { node: { label: {} }, edge: { arrow: arrow }, oddNode: { texture: "images/red.png" }, evenNode: { texture: "images/blue.png" } } }), 60, 3, ["oddNode", "evenNode"]);
+
+        window.addEventListener('resize', function() {
+            graphs.forEach(function(graph) {
+                graph.resize();
+                graph.draw();
+            });
+        });
+	</script>
+    </body>
+</html>
