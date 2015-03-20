@@ -140,6 +140,7 @@ ccNetViz = function(canvas, options) {
     var textures = new ccNetViz.textures(this.draw);
     var texts = new ccNetViz.texts(gl);
     var scene = createScene.call(this);
+    console.log(scene);
 
     var getSize = function(c, sc)  {
         var result = Math.min(c.style.maxSize, sc * Math.sqrt(c.width * c.height / c.count) / view.size);
@@ -289,6 +290,7 @@ ccNetViz = function(canvas, options) {
         var dy = e.clientY / height - view.y;
         // console.log(dx,dy);
         clicked(e);
+        this.draw();
         var drag = function(e)  {
             view.x = Math.max(0, Math.min(1 - view.size, dx - e.clientX / width));
             view.y = Math.max(0, Math.min(1 - view.size, e.clientY / height - dy));
@@ -307,6 +309,7 @@ ccNetViz = function(canvas, options) {
 
     function getContext() {
         var attributes = { depth: false, antialias: false };
+        console.log(canvas.getContext('webgl', attributes));
         return canvas.getContext('webgl', attributes) || canvas.getContext('experimental-webgl', attributes);
     }
 
@@ -314,47 +317,19 @@ ccNetViz = function(canvas, options) {
         return {
             elements: [],
             add: function(name, e)  {
+                console.log(name);
+                console.log(e);
                 scene[name] = e;
                 scene.elements.push(e);
+                console.log(scene);
+                // console.log(scene.elements);
             }
         };
     }
 
-    function nearest(x, y, best, node) {
-        console.log(node.x1, node.y1);
-        var x1 = node.x1, y1 = node.y1, x2 = node.x2, y2 = node.y2;
-        node.visited = true;
-        // // exclude node if point is farther away than best distance in either axis
-        if (x < x1 - best.d || x > x2 + best.d || y < y1 - best.d || y > y2 + best.d) {
-            return best;
-        }
-        // // test point if there is one, potentially updating best
-        // console.log(node.point);
-        var p = node.point;
-        if (p) {
-          p.scanned = true;
-          var dx = p[0] - x, dy = p[1] - y, d = Math.sqrt(dx*dx + dy*dy);
-          if (d < best.d) {
-            best.d = d;
-            best.p = p;
-          }
-        }
-        // // check if kid is on the right or left, and top or bottom
-        // // and then recurse on most likely kids first, so we quickly find a 
-        // // nearby point and then exclude many larger rectangles later
-        var kids = node.nodes;
-        var rl = (2*x > x1 + x2), bt = (2*y > y1 + y2);
-        if (kids[bt*2+rl]) best = nearest(x, y, best, kids[bt*2+rl]);
-        if (kids[bt*2+(1-rl)]) best = nearest(x, y, best, kids[bt*2+(1-rl)]);
-        if (kids[(1-bt)*2+rl]) best = nearest(x, y, best, kids[(1-bt)*2+rl]);
-        if (kids[(1-bt)*2+(1-rl)]) best = nearest(x, y, best, kids[(1-bt)*2+(1-rl)]);
-        
-        return best;
-    }
-
     function nodeSelection(node) {
         console.log(node);
-        
+        // this.draw();
     }
 
     function clicked(e) {
