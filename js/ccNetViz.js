@@ -140,7 +140,7 @@ ccNetViz = function(canvas, options) {
     var textures = new ccNetViz.textures(this.draw);
     var texts = new ccNetViz.texts(gl);
     var scene = createScene.call(this);
-    console.log(scene);
+    // console.log(scene);
 
     var getSize = function(c, sc)  {
         var result = Math.min(c.style.maxSize, sc * Math.sqrt(c.width * c.height / c.count) / view.size);
@@ -309,7 +309,7 @@ ccNetViz = function(canvas, options) {
 
     function getContext() {
         var attributes = { depth: false, antialias: false };
-        console.log(canvas.getContext('webgl', attributes));
+        // console.log(canvas.getContext('webgl', attributes));
         return canvas.getContext('webgl', attributes) || canvas.getContext('experimental-webgl', attributes);
     }
 
@@ -317,24 +317,52 @@ ccNetViz = function(canvas, options) {
         return {
             elements: [],
             add: function(name, e)  {
-                console.log(name);
-                console.log(e);
                 scene[name] = e;
                 scene.elements.push(e);
-                console.log(scene);
-                // console.log(scene.elements);
             }
         };
     }
 
     function nodeSelection(node) {
         console.log(node);
-        // this.draw();
+    }
+
+    var returnedQuadTree;
+    function addEdgeToQuadTree (quadTree, allEdges) {
+        console.log(quadTree);
+        if(typeof quadTree == "undefined") return;
+        if(quadTree.leaf == true && quadTree.nodes.length==0) {
+            console.log(":::::::;", quadTree,":::::");
+            for (var i = 0; i < allEdges.length; i++) {
+                if(allEdges[i].target.label == quadTree.point.label || allEdges[i].source.label == quadTree.point.label) {
+                    console.log(quadTree.point.label);
+                    //pushing the edge index
+                    if(typeof quadTree.edges == "undefined") quadTree.edges = [];
+                    quadTree.edges.push(i);
+                }
+            };
+            console.log("leaf found");
+            return quadTree;
+        } else {
+            addEdgeToQuadTree(quadTree.nodes[0], allEdges);
+            addEdgeToQuadTree(quadTree.nodes[1], allEdges);
+            addEdgeToQuadTree(quadTree.nodes[2], allEdges);
+            addEdgeToQuadTree(quadTree.nodes[3], allEdges);
+        }
+        return quadTree;
     }
 
     function clicked(e) {
         if(typeof e == "undefined") return;
+        //adding all the nodes to the quadTree, SHASHVAT=nodes
         var quadTree = new ccNetViz.quadtree(SHASHVAT); 
+        // quadTree.add
+        // console.log(quadTree);
+        console.log(window.allEdges);
+        // console.log(window.QuadTreeEdges);
+        returnedQuadTree = addEdgeToQuadTree(quadTree, window.allEdges);
+        console.log(returnedQuadTree);
+
         // console.log(1-e.x/canvas.width, 1-e.y/canvas.height);
         // console.log(e.x/canvas.width,1-e.y/canvas.height);
         //0,0 - bottom left
