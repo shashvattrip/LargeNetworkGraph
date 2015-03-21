@@ -332,16 +332,16 @@ ccNetViz = function(canvas, options) {
         console.log(quadTree);
         if(typeof quadTree == "undefined") return;
         if(quadTree.leaf == true && quadTree.nodes.length==0) {
-            console.log(":::::::;", quadTree,":::::");
+            // console.log(":::::::;", quadTree,":::::");
             for (var i = 0; i < allEdges.length; i++) {
                 if(allEdges[i].target.label == quadTree.point.label || allEdges[i].source.label == quadTree.point.label) {
-                    console.log(quadTree.point.label);
+                    // console.log(quadTree.point.label);
                     //pushing the edge index
                     if(typeof quadTree.edges == "undefined") quadTree.edges = [];
                     quadTree.edges.push(i);
                 }
             };
-            console.log("leaf found");
+            // console.log("leaf found");
             return quadTree;
         } else {
             addEdgeToQuadTree(quadTree.nodes[0], allEdges);
@@ -356,22 +356,26 @@ ccNetViz = function(canvas, options) {
         if(typeof e == "undefined") return;
         //adding all the nodes to the quadTree, SHASHVAT=nodes
         var quadTree = new ccNetViz.quadtree(SHASHVAT); 
+        quadTree.visit(function(node, x1, y1, x2, y2) {
+            console.log(node, x1, y1, x2,y2);
+        });
         // quadTree.add
-        // console.log(quadTree);
-        console.log(window.allEdges);
+        // console.log(window.allEdges);
         // console.log(window.QuadTreeEdges);
         returnedQuadTree = addEdgeToQuadTree(quadTree, window.allEdges);
-        console.log(returnedQuadTree);
+        // console.log(returnedQuadTree);
 
         // console.log(1-e.x/canvas.width, 1-e.y/canvas.height);
         // console.log(e.x/canvas.width,1-e.y/canvas.height);
+        // console.log(quadTree.find(e.x));
         //0,0 - bottom left
         // 0.5,0.5 center
         // 1, 0 bottom right
         // 0,1 top right
         var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
+        
         // console.log(_node);
-        nodeSelection(_node);
+        // nodeSelection(_node);
     }
 
     // clicked();

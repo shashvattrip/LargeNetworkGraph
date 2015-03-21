@@ -1,23 +1,37 @@
-ccNetViz.quadtree = function(data) {
+ccNetViz.quadtree = function(points) {
     var d, xs, ys, i, n, x1_, y1_, x2_, y2_;
+    //d = point
+    // {
+    //      index: 0
+    //     label: "Node 0"
+    //     px: -4.62990896429799
+    //     py: -10.561184168305353
+    //     style: "oddNode"
+    //     weight: 4
+    //     x: 0.29866843569966706
+    //     y: 0
+    // }
 
+    // (x2_,y2_) represt positive INFINITY point
+    // (x1_,y1_) represt negative INFINITY point
     x2_ = y2_ = -(x1_ = y1_ = Infinity);
     xs = [], ys = [];
-    n = data.length;
+    n = points.length;    //number of points 
 
     for (i = 0; i < n; ++i) {
-        d = data[i];
+        d = points[i];
         if (d.x < x1_) x1_ = d.x;
         if (d.y < y1_) y1_ = d.y;
         if (d.x > x2_) x2_ = d.x;
         if (d.y > y2_) y2_ = d.y;
-        xs.push(d.x);
-        ys.push(d.y);
+        xs.push(d.x);   //xs:array of all x coordinates
+        ys.push(d.y);   //ys:array of all y coordinates
     }
-
-    var dx = x2_ - x1_;
+    // console.log(x1_, x2_);
+    var dx = x2_ - x1_; //difference between postive and negative infinites
     var dy = y2_ - y1_;
-    dx > dy ? y2_ = y1_ + dx : x2_ = x1_ + dy;
+    // console.log(dx,dy);
+    dx > dy ? y2_ = y1_ + dx : x2_ = x1_ + dy;  //TODO:what does it mean?
 
     function create() {
         return {
@@ -120,14 +134,21 @@ ccNetViz.quadtree = function(data) {
         return closestPoint;
     }
 
-    var root = create();
-    root.visit = function(f)  {return visit(f, root, x1_, y1_, x2_, y2_);};
+    var root = create();    //creates a node, as this is the first node for the constructor call, it's called the root
+
+    // root.find(callback) 
+    // Visits each node in the quadtree, invoking the specified callback with arguments {node, x1, y1, x2, y2} for each node. Nodes are traversed in pre-order. If the callback returns true for a given node, then the children of that node are not visited; otherwise, all child nodes are visited.
+    // x1_,y1 are lower bounds
+    // x2_, y2_ are upper bounds
+    root.visit = function(f)  {
+        return visit(f, root, x1_, y1_, x2_, y2_);
+    };
     root.find = function(x, y)  {return findNode(root, x, y, x1_, y1_, x2_, y2_);};
 
-    for (i = 0; i < n; i++) insert(root, data[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
+    for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
     --i;
 
-    xs = ys = data = d = null;
+    xs = ys = points = d = null;
 
     return root;
 };
