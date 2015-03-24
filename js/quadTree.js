@@ -1,4 +1,4 @@
-ccNetViz.quadtree = function(points) {
+ccNetViz.quadtree = function(points, edges) {
     var d, xs, ys, i, n, x1_, y1_, x2_, y2_;
     var isEdge = false;
     //d = point
@@ -233,6 +233,10 @@ ccNetViz.quadtree = function(points) {
 
     for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
     --i;
+    
+    for (i = 0; i < n; i++) addEdge(root, x1_, y1_, x2_, y2_, edges[i]);
+    --i;
+    
 
     xs = ys = points = d = null;
 

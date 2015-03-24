@@ -327,47 +327,47 @@ ccNetViz = function(canvas, options) {
         console.log(node);
     }
 
-    var returnedQuadTree;
-    function addEdgeToQuadTree (quadTree, allEdges) {
-        if(typeof quadTree == "undefined") return;
-        if(quadTree.leaf == true && quadTree.nodes.length==0) {
-            // console.log(":::::::;", quadTree,":::::");
-            for (var i = 0; i < allEdges.length; i++) {
-                if(allEdges[i].target.label == quadTree.point.label || allEdges[i].source.label == quadTree.point.label) {
-                    // console.log(quadTree.point.label);
-                    //pushing the edge index
-                    if(typeof quadTree.edges == "undefined") quadTree.edges = [];
-                    quadTree.edges.push(i);
-                }
-            };
-            // console.log("leaf found");
-            return quadTree;
-        } else {
-            addEdgeToQuadTree(quadTree.nodes[0], allEdges);
-            addEdgeToQuadTree(quadTree.nodes[1], allEdges);
-            addEdgeToQuadTree(quadTree.nodes[2], allEdges);
-            addEdgeToQuadTree(quadTree.nodes[3], allEdges);
-        }
-        return quadTree;
-    }
+    // var returnedQuadTree;
+    // function addEdgeToQuadTree (quadTree, allEdges) {
+    //     if(typeof quadTree == "undefined") return;
+    //     if(quadTree.leaf == true && quadTree.nodes.length==0) {
+    //         // console.log(":::::::;", quadTree,":::::");
+    //         for (var i = 0; i < allEdges.length; i++) {
+    //             if(allEdges[i].target.label == quadTree.point.label || allEdges[i].source.label == quadTree.point.label) {
+    //                 // console.log(quadTree.point.label);
+    //                 //pushing the edge index
+    //                 if(typeof quadTree.edges == "undefined") quadTree.edges = [];
+    //                 quadTree.edges.push(i);
+    //             }
+    //         };
+    //         // console.log("leaf found");
+    //         return quadTree;
+    //     } else {
+    //         addEdgeToQuadTree(quadTree.nodes[0], allEdges);
+    //         addEdgeToQuadTree(quadTree.nodes[1], allEdges);
+    //         addEdgeToQuadTree(quadTree.nodes[2], allEdges);
+    //         addEdgeToQuadTree(quadTree.nodes[3], allEdges);
+    //     }
+    //     return quadTree;
+    // }
 
-    function addEdges2(quadTree,allEdges) {
-        for (var i = 0; i < allEdges.length; i++) {
-            quadTree.addEdge(allEdges[i]);
-        };
-    }
+    // function addEdges2(quadTree,allEdges) {
+    //     for (var i = 0; i < allEdges.length; i++) {
+    //         quadTree.addEdge(allEdges[i]);
+    //     };
+    // }
 
     function clicked(e) {
         if(typeof e == "undefined") return;
         //adding all the nodes to the quadTree, SHASHVAT=nodes
-        var quadTree = new ccNetViz.quadtree(SHASHVAT); 
+        var quadTree = shashvatQuadTree; 
         // quadTree.visit(function(node, x1, y1, x2, y2) {
         //     console.log(node, x1, y1, x2,y2);
         // });
         // quadTree.add
         // console.log(window.allEdges);
         // console.log(window.QuadTreeEdges);
-        returnedQuadTree = addEdges2(quadTree, window.allEdges);
+        // returnedQuadTree = addEdges2(quadTree, window.allEdges);
         // console.log(returnedQuadTree);
 
         // console.log(1-e.x/canvas.width, 1-e.y/canvas.height);

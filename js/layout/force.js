@@ -108,9 +108,9 @@ ccNetViz.layout.force = function(nodes, edges) {
         }
 
         if (charge) {
-            accumulate(q = ccNetViz.quadtree(nodes), alpha, charges);
+            accumulate(q = ccNetViz.quadtree(nodes, edges), alpha, charges);
             window.allEdges = edges;
-            window.QuadTreeEdges = ccNetViz.quadtree(edges);
+            // window.QuadTreeEdges = ccNetViz.quadtree(edges);
             window.shashvatQuadTree = q; 
             for (var i = 0; i < n; i++) {
                 q.visit(repulse(nodes[i]));
