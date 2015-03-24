@@ -329,7 +329,6 @@ ccNetViz = function(canvas, options) {
 
     var returnedQuadTree;
     function addEdgeToQuadTree (quadTree, allEdges) {
-        console.log(quadTree);
         if(typeof quadTree == "undefined") return;
         if(quadTree.leaf == true && quadTree.nodes.length==0) {
             // console.log(":::::::;", quadTree,":::::");
@@ -352,17 +351,23 @@ ccNetViz = function(canvas, options) {
         return quadTree;
     }
 
+    function addEdges2(quadTree,allEdges) {
+        for (var i = 0; i < allEdges.length; i++) {
+            quadTree.addEdge(allEdges[i]);
+        };
+    }
+
     function clicked(e) {
         if(typeof e == "undefined") return;
         //adding all the nodes to the quadTree, SHASHVAT=nodes
         var quadTree = new ccNetViz.quadtree(SHASHVAT); 
-        quadTree.visit(function(node, x1, y1, x2, y2) {
-            console.log(node, x1, y1, x2,y2);
-        });
+        // quadTree.visit(function(node, x1, y1, x2, y2) {
+        //     console.log(node, x1, y1, x2,y2);
+        // });
         // quadTree.add
         // console.log(window.allEdges);
         // console.log(window.QuadTreeEdges);
-        returnedQuadTree = addEdgeToQuadTree(quadTree, window.allEdges);
+        returnedQuadTree = addEdges2(quadTree, window.allEdges);
         // console.log(returnedQuadTree);
 
         // console.log(1-e.x/canvas.width, 1-e.y/canvas.height);
@@ -372,7 +377,7 @@ ccNetViz = function(canvas, options) {
         // 0.5,0.5 center
         // 1, 0 bottom right
         // 0,1 top right
-        var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
+        // var _node = quadTree.find(0,0);
         
         // console.log(_node);
         // nodeSelection(_node);

@@ -1,5 +1,6 @@
 ccNetViz.quadtree = function(points) {
     var d, xs, ys, i, n, x1_, y1_, x2_, y2_;
+    var isEdge = false;
     //d = point
     // {
     //      index: 0
@@ -15,7 +16,8 @@ ccNetViz.quadtree = function(points) {
     // (x2_,y2_) represt positive INFINITY point
     // (x1_,y1_) represt negative INFINITY point
     x2_ = y2_ = -(x1_ = y1_ = Infinity);
-    xs = [], ys = [];
+    xs = [], ys = [];   //xs:array of all x coordinates
+    //ys:array of all y coordinates
     n = points.length;    //number of points 
 
     for (i = 0; i < n; ++i) {
@@ -24,10 +26,11 @@ ccNetViz.quadtree = function(points) {
         if (d.y < y1_) y1_ = d.y;
         if (d.x > x2_) x2_ = d.x;
         if (d.y > y2_) y2_ = d.y;
-        xs.push(d.x);   //xs:array of all x coordinates
-        ys.push(d.y);   //ys:array of all y coordinates
+        xs.push(d.x);   
+        ys.push(d.y); 
+
     }
-    // console.log(x1_, x2_);
+    // console.log(xs,ys);
     var dx = x2_ - x1_; //difference between postive and negative infinites
     var dy = y2_ - y1_;
     // console.log(dx,dy);
@@ -45,8 +48,8 @@ ccNetViz.quadtree = function(points) {
 
     function visit(f, node, x1, y1, x2, y2) {
         if (!f(node, x1, y1, x2, y2)) {
-            var sx = (x1 + x2) * 0.5;
-            var sy = (y1 + y2) * 0.5;
+            var sx = (x1 + x2) * 0.5;   //bisecting the x axis
+            var sy = (y1 + y2) * 0.5;   //bisecting the y-axis
             var children = node.nodes;
 
             if (children[0]) visit(f, children[0], x1, y1, sx, sy);
@@ -56,6 +59,7 @@ ccNetViz.quadtree = function(points) {
         }
     }
 
+    // insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_)
     function insert(n, d, x, y, x1, y1, x2, y2) {
         if (n.leaf) {
             var nx = n.x;
@@ -79,17 +83,19 @@ ccNetViz.quadtree = function(points) {
         }
     }
 
+    // insertChild(root, point, xs[i], ys[i], x1_, y1_, x2_, y2_)
     function insertChild(n, d, x, y, x1, y1, x2, y2) {
-        var xm = (x1 + x2) * 0.5;
-        var ym = (y1 + y2) * 0.5;
-        var right = x >= xm;
-        var below = y >= ym;
-        var i = below << 1 | right;
+        var xm = (x1 + x2) * 0.5;   //bisecting the x-axis, division between left and right sides of the quadrants
+        var ym = (y1 + y2) * 0.5;   //bisecting the y-axis, division between top and bottom parts of the quadrants
+        var right = x >= xm;        //does the point lie on the right side?
+        var below = y >= ym;        //does the point lie below the horizontal axis?
+        var i = below << 1 | right; //Bitwise shifting any number x to the left by y bits yields x * 2^y.
+                                    //determines which quadrant to put the new node in
 
         n.leaf = false;
         n = n.nodes[i] || (n.nodes[i] = create());
 
-        right ? x1 = xm : x2 = xm;
+        right ? x1 = xm : x2 = xm;  //adjust the boundaries of the new quadrant
         below ? y1 = ym : y2 = ym;
         insert(n, d, x, y, x1, y1, x2, y2);
     }
@@ -134,6 +140,84 @@ ccNetViz.quadtree = function(points) {
         return closestPoint;
     }
 
+    //check if the edge intersects with the given node
+    function intersects(edge, node, x1_, y1_, x2_, y2_) {
+        // first test whether the segment bounding box is entirely contained
+        // within the block.  If true, the segment is obviously inside the block
+        // console.log(x1_,y1_,x2_,y2_);
+        var esx = edge.source.x;
+        var esy = edge.source.y;
+        var etx = edge.target.x;
+        var ety = edge.target.y;
+        var mx = (x1_ + x2_)*0.5;
+        var my = (y1_ + y2_)*0.5;
+        //checking if the block lies inside the current quadrant
+        if( esx > x1_ && esx < x2_ && ety > y1_ && ety < y2_) {
+            // does not intersect the bounding box as it completely lies inside it
+            // console.log("return false");
+            return false;
+        } 
+        
+        // if segment bounding box is not entirely contained within the block, then
+        // the segment itself must intersect with at least one of the four sides
+        // of the block.  Otherwise, the segment and block do not intersect 
+
+        //check if it intersects top quadrants
+        if(esx <= mx && ety >= my) {
+        // if yes
+            //test if the two top quadrants are leaf nodes
+            if(node.leaf == true) {
+            //if yes, then store the edge
+            } else {
+            // else recurse to a leaf node
+            }
+        }
+
+        //check if it intersects bottom quadrants
+        if(esy <= my && ety >= my) {
+            //test if the two bottom quadrants are leaf nodes
+            if(node.leaf == true) {
+            //if yes, then store the edge
+            } else {
+            // else recurse to a leaf node
+            }
+        }
+        
+
+    }
+
+    function addEdge(root, x1_, y1_, x2_, y2_, edge) {
+        //if(typeof root == "undefined") return false;
+        // console.log(root, x1_,y1_,x2_,y2_);
+        // console.log("adding edge to the quadtree");
+        //check it the node intersects the edge
+        //if yes
+        if(intersects(edge, root, x1_,y1_,x2_,y2_)) {
+            //find the leaf node to put the edge in
+            //check if curr node is the leaf node
+            if(root.leaf == true && root.nodes.length==0 && typeof root.point !== "undefined") {
+                //put the edge here
+                if(typeof root.edges == "undefined") root.edges = [];
+                root.edges.push(edge);
+                return true;
+            } else {
+                //recurse to a leaf node
+                if(typeof root[0] !== "undefined")
+                    addEdge(root[0], x1_, y1_, x2_, y2_, edge);
+                if(typeof root[1] !== "undefined")
+                    addEdge(root[1], x1_, y1_, x2_, y2_, edge);
+                if(typeof root[2] !== "undefined")
+                    addEdge(root[2], x1_, y1_, x2_, y2_, edge);
+                if(typeof root[3] !== "undefined")
+                    addEdge(root[3], x1_, y1_, x2_, y2_, edge);
+                return true;
+            }
+        } else 
+            return false;
+        // if no
+            // do nothing
+    }
+
     var root = create();    //creates a node, as this is the first node for the constructor call, it's called the root
 
     // root.find(callback) 
@@ -144,6 +228,8 @@ ccNetViz.quadtree = function(points) {
         return visit(f, root, x1_, y1_, x2_, y2_);
     };
     root.find = function(x, y)  {return findNode(root, x, y, x1_, y1_, x2_, y2_);};
+
+    root.addEdge = function(edge) {return addEdge(root, x1_, y1_, x2_, y2_, edge);};
 
     for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
     --i;
