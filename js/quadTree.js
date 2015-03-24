@@ -234,7 +234,7 @@ ccNetViz.quadtree = function(points, edges) {
     for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
     --i;
     
-    for (i = 0; i < n; i++) addEdge(root, x1_, y1_, x2_, y2_, edges[i]);
+    for (i = 0; i < edges.length; i++) addEdge(root, x1_, y1_, x2_, y2_, edges[i]);
     --i;
     
 
