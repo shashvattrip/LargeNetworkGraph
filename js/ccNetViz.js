@@ -361,9 +361,10 @@ ccNetViz = function(canvas, options) {
         if(typeof e == "undefined") return;
         //adding all the nodes to the quadTree, SHASHVAT=nodes
         var quadTree = shashvatQuadTree; 
-        // quadTree.visit(function(node, x1, y1, x2, y2) {
-        //     console.log(node, x1, y1, x2,y2);
-        // });
+        quadTree.visit(function(node, x1, y1, x2, y2) {
+            console.log(node,x1, y1, x2,y2);
+            // return true;
+        });
         // quadTree.add
         // console.log(window.allEdges);
         // console.log(window.QuadTreeEdges);

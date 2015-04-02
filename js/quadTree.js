@@ -145,12 +145,13 @@ ccNetViz.quadtree = function(points, edges) {
         // first test whether the segment bounding box is entirely contained
         // within the block.  If true, the segment is obviously inside the block
         // console.log(x1_,y1_,x2_,y2_);
-        var esx = edge.source.x;
+        var esx = edge.source.x;    
         var esy = edge.source.y;
         var etx = edge.target.x;
         var ety = edge.target.y;
         var mx = (x1_ + x2_)*0.5;
         var my = (y1_ + y2_)*0.5;
+
         //checking if the block lies inside the current quadrant
         if( esx > x1_ && esx < x2_ && ety > y1_ && ety < y2_) {
             // does not intersect the bounding box as it completely lies inside it
@@ -162,26 +163,14 @@ ccNetViz.quadtree = function(points, edges) {
         // the segment itself must intersect with at least one of the four sides
         // of the block.  Otherwise, the segment and block do not intersect 
 
-        //check if it intersects top quadrants
-        if(esx <= mx && ety >= my) {
-        // if yes
-            //test if the two top quadrants are leaf nodes
-            if(node.leaf == true) {
-            //if yes, then store the edge
-            } else {
-            // else recurse to a leaf node
-            }
-        }
+        // using parametric method to determine whether the two lines intersect
+        var sNumer = (x1_ - x2_)*(y2_ - esy) - (x2_ - esx)*(y1_ - y2_);
+        var sDenom = (x1_ - x2_)*(ety - esy) - (etx - esx)*(y1_ - y2_);
+        var s = sNumer/sDenom;
+        // if(s < 1) {
+            // they intersect
+        
 
-        //check if it intersects bottom quadrants
-        if(esy <= my && ety >= my) {
-            //test if the two bottom quadrants are leaf nodes
-            if(node.leaf == true) {
-            //if yes, then store the edge
-            } else {
-            // else recurse to a leaf node
-            }
-        }
         
 
     }
@@ -193,6 +182,7 @@ ccNetViz.quadtree = function(points, edges) {
         //check it the node intersects the edge
         //if yes
         if(intersects(edge, root, x1_,y1_,x2_,y2_)) {
+            console.log("intersects bounding box");
             //find the leaf node to put the edge in
             //check if curr node is the leaf node
             if(root.leaf == true && root.nodes.length==0 && typeof root.point !== "undefined") {
@@ -220,7 +210,7 @@ ccNetViz.quadtree = function(points, edges) {
 
     var root = create();    //creates a node, as this is the first node for the constructor call, it's called the root
 
-    // root.find(callback) 
+    // root.visit(callback) 
     // Visits each node in the quadtree, invoking the specified callback with arguments {node, x1, y1, x2, y2} for each node. Nodes are traversed in pre-order. If the callback returns true for a given node, then the children of that node are not visited; otherwise, all child nodes are visited.
     // x1_,y1 are lower bounds
     // x2_, y2_ are upper bounds
@@ -237,7 +227,6 @@ ccNetViz.quadtree = function(points, edges) {
     for (i = 0; i < edges.length; i++) addEdge(root, x1_, y1_, x2_, y2_, edges[i]);
     --i;
     
-
     xs = ys = points = d = null;
 
     return root;
