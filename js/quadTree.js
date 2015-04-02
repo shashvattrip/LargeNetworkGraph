@@ -219,13 +219,13 @@ ccNetViz.quadtree = function(points, edges) {
     };
     root.find = function(x, y)  {return findNode(root, x, y, x1_, y1_, x2_, y2_);};
 
-    root.addEdge = function(edge) {return addEdge(root, x1_, y1_, x2_, y2_, edge);};
+    // root.addEdge = function(edge) {return addEdge(root, x1_, y1_, x2_, y2_, edge);};
 
     for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
     --i;
     
-    for (i = 0; i < edges.length; i++) addEdge(root, x1_, y1_, x2_, y2_, edges[i]);
-    --i;
+    // for (i = 0; i < edges.length; i++) addEdge(root, x1_, y1_, x2_, y2_, edges[i]);
+    // --i;
     
     xs = ys = points = d = null;
 

@@ -1,7 +1,7 @@
 ccNetViz = function(canvas, options) {
     options = options || {};
     options.styles = options.styles || {};
-    var SHASHVAT;
+    var currentNodes;
     var backgroundStyle = options.styles.background = options.styles.background || {};
     var backgroundColor = new ccNetViz.color(backgroundStyle.color || "rgb(255, 255, 255)");
 
@@ -30,7 +30,7 @@ ccNetViz = function(canvas, options) {
 
     this.set = function(nodes, edges, layout) {
         this.nodes = nodes = nodes || [];
-        SHASHVAT = this.nodes;
+        currentNodes = this.nodes;
         this.edges = edges = edges || [];
         layout = layout || "random";
 
@@ -278,19 +278,11 @@ ccNetViz = function(canvas, options) {
     }
 
     function onMouseDown(e) {
-        // console.log(canvas.width, view.size);
-        // console.log(canvas.height, view.size);
-        // console.log(view);
-        // console.log(e.clientX); //mouse click coordinate from top left (0,0)
-        // console.log(e.clientY);
-        // view = {x:0, y:0, size:1}
         var width = canvas.width / view.size;
         var height = canvas.height / view.size;
         var dx = view.x + e.clientX / width; //dx,dy are ratios 
         var dy = e.clientY / height - view.y;
-        // console.log(dx,dy);
         clicked(e);
-        this.draw();
         var drag = function(e)  {
             view.x = Math.max(0, Math.min(1 - view.size, dx - e.clientX / width));
             view.y = Math.max(0, Math.min(1 - view.size, e.clientY / height - dy));
@@ -309,7 +301,6 @@ ccNetViz = function(canvas, options) {
 
     function getContext() {
         var attributes = { depth: false, antialias: false };
-        // console.log(canvas.getContext('webgl', attributes));
         return canvas.getContext('webgl', attributes) || canvas.getContext('experimental-webgl', attributes);
     }
 
@@ -327,62 +318,11 @@ ccNetViz = function(canvas, options) {
         console.log(node);
     }
 
-    // var returnedQuadTree;
-    // function addEdgeToQuadTree (quadTree, allEdges) {
-    //     if(typeof quadTree == "undefined") return;
-    //     if(quadTree.leaf == true && quadTree.nodes.length==0) {
-    //         // console.log(":::::::;", quadTree,":::::");
-    //         for (var i = 0; i < allEdges.length; i++) {
-    //             if(allEdges[i].target.label == quadTree.point.label || allEdges[i].source.label == quadTree.point.label) {
-    //                 // console.log(quadTree.point.label);
-    //                 //pushing the edge index
-    //                 if(typeof quadTree.edges == "undefined") quadTree.edges = [];
-    //                 quadTree.edges.push(i);
-    //             }
-    //         };
-    //         // console.log("leaf found");
-    //         return quadTree;
-    //     } else {
-    //         addEdgeToQuadTree(quadTree.nodes[0], allEdges);
-    //         addEdgeToQuadTree(quadTree.nodes[1], allEdges);
-    //         addEdgeToQuadTree(quadTree.nodes[2], allEdges);
-    //         addEdgeToQuadTree(quadTree.nodes[3], allEdges);
-    //     }
-    //     return quadTree;
-    // }
-
-    // function addEdges2(quadTree,allEdges) {
-    //     for (var i = 0; i < allEdges.length; i++) {
-    //         quadTree.addEdge(allEdges[i]);
-    //     };
-    // }
-
     function clicked(e) {
         if(typeof e == "undefined") return;
-        //adding all the nodes to the quadTree, SHASHVAT=nodes
-        var quadTree = shashvatQuadTree; 
-        quadTree.visit(function(node, x1, y1, x2, y2) {
-            console.log(node,x1, y1, x2,y2);
-            // return true;
-        });
-        // quadTree.add
-        // console.log(window.allEdges);
-        // console.log(window.QuadTreeEdges);
-        // returnedQuadTree = addEdges2(quadTree, window.allEdges);
-        // console.log(returnedQuadTree);
-
-        // console.log(1-e.x/canvas.width, 1-e.y/canvas.height);
-        // console.log(e.x/canvas.width,1-e.y/canvas.height);
-        // console.log(quadTree.find(e.x));
-        //0,0 - bottom left
-        // 0.5,0.5 center
-        // 1, 0 bottom right
-        // 0,1 top right
-        // var _node = quadTree.find(0,0);
-        
-        // console.log(_node);
-        // nodeSelection(_node);
+        quadTree = ccNetViz.quadtree(currentNodes);
+        var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
+        console.log(_node);
     }
 
-    // clicked();
 }
