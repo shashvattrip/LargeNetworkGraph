@@ -140,7 +140,6 @@ ccNetViz = function(canvas, options) {
     var textures = new ccNetViz.textures(this.draw);
     var texts = new ccNetViz.texts(gl);
     var scene = createScene.call(this);
-    console.log(scene);
 
     var getSize = function(c, sc)  {
         var result = Math.min(c.style.maxSize, sc * Math.sqrt(c.width * c.height / c.count) / view.size);
@@ -278,17 +277,11 @@ ccNetViz = function(canvas, options) {
     }
 
     function onMouseDown(e) {
-        // console.log(canvas.width, view.size);
-        // console.log(canvas.height, view.size);
-        // console.log(view);
-        // console.log(e.clientX); //mouse click coordinate from top left (0,0)
-        // console.log(e.clientY);
         // view = {x:0, y:0, size:1}
         var width = canvas.width / view.size;
         var height = canvas.height / view.size;
         var dx = view.x + e.clientX / width; //dx,dy are ratios 
         var dy = e.clientY / height - view.y;
-        // console.log(dx,dy);
         clicked(e);
         this.draw();
         var drag = function(e)  {
@@ -309,7 +302,6 @@ ccNetViz = function(canvas, options) {
 
     function getContext() {
         var attributes = { depth: false, antialias: false };
-        console.log(canvas.getContext('webgl', attributes));
         return canvas.getContext('webgl', attributes) || canvas.getContext('experimental-webgl', attributes);
     }
 
@@ -317,34 +309,20 @@ ccNetViz = function(canvas, options) {
         return {
             elements: [],
             add: function(name, e)  {
-                console.log(name);
-                console.log(e);
                 scene[name] = e;
                 scene.elements.push(e);
-                console.log(scene);
-                // console.log(scene.elements);
             }
         };
     }
 
     function nodeSelection(node) {
         console.log(node);
-        // this.draw();
     }
 
     function clicked(e) {
         if(typeof e == "undefined") return;
         var quadTree = new ccNetViz.quadtree(SHASHVAT); 
-        // console.log(1-e.x/canvas.width, 1-e.y/canvas.height);
-        // console.log(e.x/canvas.width,1-e.y/canvas.height);
-        //0,0 - bottom left
-        // 0.5,0.5 center
-        // 1, 0 bottom right
-        // 0,1 top right
         var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
-        // console.log(_node);
         nodeSelection(_node);
     }
-
-    // clicked();
 }
