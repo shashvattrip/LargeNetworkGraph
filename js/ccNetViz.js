@@ -2,6 +2,7 @@ ccNetViz = function(canvas, options) {
     options = options || {};
     options.styles = options.styles || {};
     var currentNodes;
+    var currentEdges;
     var backgroundStyle = options.styles.background = options.styles.background || {};
     var backgroundColor = new ccNetViz.color(backgroundStyle.color || "rgb(255, 255, 255)");
 
@@ -32,6 +33,7 @@ ccNetViz = function(canvas, options) {
         this.nodes = nodes = nodes || [];
         currentNodes = this.nodes;
         this.edges = edges = edges || [];
+        currentEdges = this.edges;
         layout = layout || "random";
 
         var created = !nodes.some(function(e)  {return e.x == null || e.y == null;});
@@ -320,9 +322,14 @@ ccNetViz = function(canvas, options) {
 
     function clicked(e) {
         if(typeof e == "undefined") return;
-        quadTree = ccNetViz.quadtree(currentNodes);
+        console.log(currentEdges);
+        quadTree = ccNetViz.quadtree(currentNodes, currentEdges);
         var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
         console.log(_node);
+
+        //finding the nearest edge
+        var _edge = quadTree.findEdge(e.x/canvas.width,1-e.y/canvas.height);
+        console.log(_edge);
     }
 
 }
