@@ -195,24 +195,20 @@ ccNetViz.quadtree = function(points, edges) {
 
         //if both the nodes are inside the bounding box
         if(sourceOutcode == 0000 && targetOutcode == 0000) {
-            console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
-            console.log(sourceOutcode);
-            console.log(targetOutcode);
+            // console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
             return false;
         } else if((sourceOutcode[0] == 1 && targetOutcode[0] == 1) || 
                 (sourceOutcode[1] == 1 && targetOutcode[1] == 1) ||
                 (sourceOutcode[2] == 1 && targetOutcode[2] == 1) ||
                 (sourceOutcode[3] == 1 && targetOutcode[3] == 1)) {
-            console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
-            console.log(sourceOutcode);
-            console.log(targetOutcode);
+            // console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
             return false;
         } else {
             //clipping the line segment
             // pick one node that lies outside the bounding box
-            console.log("%c segment intersects the edge", 'background: green; color: white');
-            console.log(sourceOutcode);
-            console.log(targetOutcode);
+            // console.log("%c segment intersects the edge", 'background: green; color: white');
+            // console.log(sourceOutcode);
+            // console.log(targetOutcode);
             var outsideTempNode, insideTempNode;
             var codeOut;
             if(sourceOutcode == 0000) {
@@ -248,8 +244,12 @@ ccNetViz.quadtree = function(points, edges) {
                 intersectionPointCoord.y = outsideTempNode.y + (x1_ - outsideTempNode.x) * ((insideTempNode.y - outsideTempNode.y) / (insideTempNode.x - outsideTempNode.x));
                 intersectionPointCoord.x = x1_;
             }
-            console.log('(', outsideTempNode.x,outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
-            console.log('(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+            // console.log('(', outsideTempNode.x,outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            // console.log('(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+
+            return true;
+            // computeOutcode(intersectionPointCoord, x1_,y1_,x2_,y2_);
+
         }
 
 
@@ -280,24 +280,29 @@ ccNetViz.quadtree = function(points, edges) {
             b1 = b2 = 0;
         }
         return (b1 + '' + b2 + '' + b3 + '' + b4);
-        // console.log(b1 + '' + b2 + '' + b3 + '' + b4);
     }
 
     function addEdge(root, x1_, y1_, x2_, y2_, edge) {
-        console.log("adding edge", edge.source.label, edge.target.label);
+        // console.log("adding edge", edge.source.label, edge.target.label);
         //if(typeof root == "undefined") return false;
         //check it the node intersects the edge
         //if yes
         if(intersects(edge, root, x1_,y1_,x2_,y2_)) {
             //find the leaf node to put the edge in
             //check if curr node is the leaf node
-            if(root.leaf == true && root.nodes.length==0 && typeof root.point !== "undefined") {
+            // if(root.leaf == true && root.nodes.length==0 && typeof root.point !== "undefined") {
+            if(root.leaf == true && root.nodes.length==0) {
                 //put the q-edge here
                 if(typeof root.QEdges == "undefined") root.QEdges = [];
                 root.QEdges.push(edge);
-                console.log("%c Edge added", 'background: blue; color: white', edge);
+                console.log("%c Edge added", 'background: blue; color: white');
+                if(typeof root.point !== "undefined") {
+                    console.log("Source:", edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
+                } else {
+                    console.log("Source:", edge.source.label, "Target:", edge.target.label, 'to node --->', "contains no point");
+                }
             } else {
-                console.log("%c Recurse into an inner quadrant", 'background: blue; color: white');
+                // console.log("%c Recurse into an inner quadrant", 'background: blue; color: white');
                 //recurse to a leaf node? What to do here?
                 
             }
