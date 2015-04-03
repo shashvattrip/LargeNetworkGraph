@@ -150,16 +150,21 @@ ccNetViz.quadtree = function(points, edges) {
         //middle point of y-axis
         var mx = (x1_ + x2_)*0.5;
         //middle point of x-axis
-        var my = (y1_ + y2_)*0.5;
-        console.log(edge.source.label,edge.target.label, node);
-        console.log("%c limits for intersection checker", 'background: green; color: white', x1_,y1_,x2_,y2_);
+        var my = (y1_ + y2_)*0.5;        
         
         //checking if the block lies inside the current quadrant
-        if( esx >= x1_ && esx <= x2_ && ety >= y1_ && ety <= y2_) {
-            // does not intersect the bounding box as it completely lies inside it
-            console.log("%c NOT intersects because edge is entirely contained within the quadrant", 'background: yellow; color: red');
-            return false;
-        } 
+        // if( esx >= x1_ && esx <= x2_ && ety >= y1_ && ety <= y2_) {
+        //     // does not intersect the bounding box as it completely lies inside it
+        //     console.log("%c NOT intersects because edge is entirely contained within the quadrant", 'background: yellow; color: red');
+        //     return false;
+        // } 
+        // //if both the source and taget nodes lie outside the bounding box
+        // if(((esx > x2_ && esy > y2_) || (esx < x1_ && esy < y1_))) {
+        //     if(((etx > x2_ && ety > y2_) || (etx < x1_ && ety < y1_))) {
+        //         console.log("%c NOT intersects because edge is entirely outside the quadrant", 'background: yellow; color: red');
+        //         return false;
+        //     }
+        // }
         
         // if segment bounding box is not entirely contained within the block, then
         // the segment itself must intersect with at least one of the four sides
@@ -167,22 +172,115 @@ ccNetViz.quadtree = function(points, edges) {
 
         // using parametric method to determine which edge the line segment intersects
 
-        var sNumer = (x1_ - x2_)*(y2_ - esy) - (x2_ - esx)*(y1_ - y2_);
-        var sDenom = (x1_ - x2_)*(ety - esy) - (etx - esx)*(y1_ - y2_);
-        var s = sNumer/sDenom;
-        if(s < 1) {
-            // they intersect
-            console.log("%c intersects", 'background: yellow; color: red');
-            return true;
-        } else {
-            //this means that the extended line segments intersect, which we don't consider
-            console.log("%c NOT intersects", 'background: yellow; color: red');
+        // var sNumer = (x1_ - x2_)*(y2_ - esy) - (x2_ - esx)*(y1_ - y2_);
+        // var sDenom = (x1_ - x2_)*(ety - esy) - (etx - esx)*(y1_ - y2_);
+        // var s = sNumer/sDenom;
+        // if(s < 1) {
+        //     // they intersect
+        //     console.log("%c intersects", 'background: yellow; color: red');
+        //     return true;
+        // } else {
+        //     //this means that the extended line segments intersect, which we don't consider
+        //     console.log("%c NOT intersects", 'background: yellow; color: red');
+        //     return false;
+        // }
+        
+        var sourceOutcode, targetOutcode;
+        var b1,b2,b3,b4;
+        // compute outcodes for both the end points
+        sourceOutcode = computeOutcode(edge.source, x1_, y1_, x2_, y2_);
+        targetOutcode = computeOutcode(edge.target, x1_, y1_, x2_, y2_);
+        // console.log(sourceOutcode);
+        // console.log(targetOutcode);
+
+        //if both the nodes are inside the bounding box
+        if(sourceOutcode == 0000 && targetOutcode == 0000) {
+            console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
+            console.log(sourceOutcode);
+            console.log(targetOutcode);
             return false;
+        } else if((sourceOutcode[0] == 1 && targetOutcode[0] == 1) || 
+                (sourceOutcode[1] == 1 && targetOutcode[1] == 1) ||
+                (sourceOutcode[2] == 1 && targetOutcode[2] == 1) ||
+                (sourceOutcode[3] == 1 && targetOutcode[3] == 1)) {
+            console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
+            console.log(sourceOutcode);
+            console.log(targetOutcode);
+            return false;
+        } else {
+            //clipping the line segment
+            // pick one node that lies outside the bounding box
+            console.log("%c segment intersects the edge", 'background: green; color: white');
+            console.log(sourceOutcode);
+            console.log(targetOutcode);
+            var outsideTempNode, insideTempNode;
+            var codeOut;
+            if(sourceOutcode == 0000) {
+                codeOut = targetOutcode;
+                outsideTempNode = edge.target;
+                insideTempNode = edge.source;
+            }
+            else {
+                codeOut = sourceOutcode;
+                outsideTempNode = edge.source;
+                insideTempNode = edge.target;
+            } 
+
+            var intersectionPointCoord = {};
+            //find out the intersection point on the edge
+            //if the node selected is above the top edge
+            if(codeOut[0] == 1) {
+                intersectionPointCoord.x = outsideTempNode.x + (y2_ - outsideTempNode.y) * ((insideTempNode.x - outsideTempNode.x) / (insideTempNode.y - outsideTempNode.y));
+                intersectionPointCoord.y = y2_;
+            } 
+            //if the node selected is below the bottom edge
+            else if(codeOut[1] == 1){
+                intersectionPointCoord.x = outsideTempNode.x + (y1_ - outsideTempNode.y) * ((insideTempNode.x - outsideTempNode.x) / (insideTempNode.y - outsideTempNode.y));
+                intersectionPointCoord.y = y1_;
+            }
+            //if the node selected is right of the right edge
+            else if(codeOut[2] == 1){
+                intersectionPointCoord.y = outsideTempNode.y + (x2_ - outsideTempNode.x) * ((insideTempNode.y - outsideTempNode.y) / (insideTempNode.x - outsideTempNode.x));
+                intersectionPointCoord.x = x2_;
+            }
+            //if the node selected is left of the left edge
+            else if(codeOut[3] == 1){
+                intersectionPointCoord.y = outsideTempNode.y + (x1_ - outsideTempNode.x) * ((insideTempNode.y - outsideTempNode.y) / (insideTempNode.x - outsideTempNode.x));
+                intersectionPointCoord.x = x1_;
+            }
+            console.log('(', outsideTempNode.x,outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            console.log('(', intersectionPointCoord.x,intersectionPointCoord.y,')');
         }
-        
 
-        
 
+        // b4 == 1 for both OR
+        // b3 == 1 for both OR
+
+
+    }
+
+    function computeOutcode(point, x1_, y1_, x2_, y2_) {
+        var b1 = 0, //above top edge
+            b2 = 0, //below bottom edge
+            b3 = 0, //right of right edge
+            b4 = 0; //left of left edge
+        if(point.x < x1_) {
+            b4 = 1;
+        } else if(point.x > x2_) {
+            b3 = 1;
+        } else {
+            b3 = b4 = 0;
+        }
+
+        if(point.y < y1_) {
+            b2 = 1;
+        } else if(point.y > y2_) {
+            b1 = 1;
+        } else {
+            b1 = b2 = 0;
+        }
+        return (b1 + '' + b2 + '' + b3 + '' + b4);
+        // console.log(b1 + '' + b2 + '' + b3 + '' + b4);
     }
 
     function addEdge(root, x1_, y1_, x2_, y2_, edge) {
