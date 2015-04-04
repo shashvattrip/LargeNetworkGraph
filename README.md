@@ -1,11 +1,17 @@
 # LargeNetworkGraph
 Proposal Assignments completed
 1. Finding Nearest Node - 
-https://github.com/shashvattrip/LargeNetworkGraph/tree/nearest_node_draft
 
-2. Logging the nearest node - 
-https://github.com/shashvattrip/LargeNetworkGraph/tree/nearest_node_draft
+In the file ccNetViz.js, inside the function clicked(e), 
+	console.log(_node);
+prints the nearest node
 
-3. Finding nearest edge - Added segments to the quadtree
+2. Adding all the edges to the quadtree
+	Inside the clicked(e) function in ccNetViz.js
+		-I have created a quadtree with given nodes and edges
+		-console.log("Quadtree is", quadTree); //logs out the quadtree structure, marked as RED in CONSOLE
+		-One can observe that ALL leaf nodes have the edges stored in them that pass through the leaf nodes
+
+3. Finding nearest edge 
 
 4. Logging out the nearest edge

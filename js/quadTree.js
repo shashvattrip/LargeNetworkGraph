@@ -367,23 +367,28 @@ ccNetViz.quadtree = function(points, edges) {
     function normalizeNodes(root) {
         if(typeof root == "undefined") return;
         if(root.leaf == false) {
-            // console.log(root);
-            if(root.nodes.length < 4) {
-                //find out what nodes are missing and add them as leaf nodes with null points
-                // console.log("add here");
-                if(typeof root.nodes[0] == "undefined") {
-                    root.nodes[0] = create();
-                }
-                if(typeof root.nodes[1] == "undefined") {
-                    root.nodes[1] = create();
-                }
-                if(typeof root.nodes[2] == "undefined") {
-                    root.nodes[2] = create();
-                }
-                if(typeof root.nodes[3] == "undefined") {
-                    root.nodes[3] = create();
-                }
+            
+            //for the visit function to truly visit ALL nodes, we have to ensure that the NODES exist
+            // In the D3 implementation of the quadtree, if a node was divided, nodes were created ONLY if they had a point in them
+            // This means that if in a quadrant, there were 2 points, only two nodes were created and were indexed.
+            //What this function does is it creates other nodes as well, and marks them as leaf nodes with NO point inside.
+            //This will ensure that QE-Edges can be added to nodes that don't have any point inside them
+
+            //find out what nodes are missing and add them as leaf nodes with null points
+            // console.log("add here");
+            if(typeof root.nodes[0] == "undefined") {
+                root.nodes[0] = create();
             }
+            if(typeof root.nodes[1] == "undefined") {
+                root.nodes[1] = create();
+            }
+            if(typeof root.nodes[2] == "undefined") {
+                root.nodes[2] = create();
+            }
+            if(typeof root.nodes[3] == "undefined") {
+                root.nodes[3] = create();
+            }
+            //recurse into node
             if(root.nodes) {
                 normalizeNodes(root.nodes[0]);
                 normalizeNodes(root.nodes[1]);

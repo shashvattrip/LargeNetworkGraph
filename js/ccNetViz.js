@@ -326,7 +326,7 @@ ccNetViz = function(canvas, options) {
         quadTree = ccNetViz.quadtree(currentNodes, currentEdges);
         var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
         console.log(_node);
-        console.log("Quadtree is", quadTree);
+        console.log("%c Quadtree is", 'background: red; color:white', quadTree);
         //finding the nearest edge
         var _edge = quadTree.findEdge(e.x/canvas.width,1-e.y/canvas.height);
         console.log(_edge);
