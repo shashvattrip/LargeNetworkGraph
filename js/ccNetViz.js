@@ -322,14 +322,14 @@ ccNetViz = function(canvas, options) {
 
     function clicked(e) {
         if(typeof e == "undefined") return;
-        console.log(currentEdges);
+        // console.log(currentEdges);
         quadTree = ccNetViz.quadtree(currentNodes, currentEdges);
         var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
-        console.log(_node);
-        console.log("%c Quadtree is", 'background: red; color:white', quadTree);
+        console.log("closest Node :: ", _node);
+        // console.log("%c Quadtree is", 'background: red; color:white', quadTree);
         //finding the nearest edge
         var _edge = quadTree.findEdge(e.x/canvas.width,1-e.y/canvas.height);
-        console.log(_edge);
+        console.log("closest Edge :: ", _edge);
     }
 
 }

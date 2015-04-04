@@ -1,5 +1,5 @@
 ccNetViz.quadtree = function(points, edges) {
-    console.log(" Quadtree constructor called");
+    // console.log(" Quadtree constructor called");
     var d, xs, ys, i, n, x1_, y1_, x2_, y2_;
     var isEdge = false;
     //d = point
@@ -99,6 +99,21 @@ ccNetViz.quadtree = function(points, edges) {
         insert(n, d, x, y, x1, y1, x2, y2);
     }
 
+    function findEdge(root, x, y, x1_, y1_, x2_, y2_) {
+        //find the quadrant in which this point lies
+        if(root.leaf == true) {
+
+        } else {
+            //recurse to a root
+            var nodes = root.nodes;
+
+        }
+        //search for edges stored in this quadrant
+
+        return closestPoint;
+    }
+
+    // findNode(root, x, y, x1_, y1_, x2_, y2_)
     function findNode(root, x, y, x0, y0, x3, y3) {
         var minDistance2 = Infinity;
         var closestPoint;
@@ -196,15 +211,15 @@ ccNetViz.quadtree = function(points, edges) {
 
         //if both the nodes are inside the bounding box
         if(sourceOutcode == 0000 && targetOutcode == 0000) {
-            console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
-            console.log('(',esx,esy,')','(',etx,ety,')', x1_, y1_, x2_,y2_);
+            // console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
+            // console.log('(',esx,esy,')','(',etx,ety,')', x1_, y1_, x2_,y2_);
             return false;
         } else if((sourceOutcode[0] == 1 && targetOutcode[0] == 1) || 
                 (sourceOutcode[1] == 1 && targetOutcode[1] == 1) ||
                 (sourceOutcode[2] == 1 && targetOutcode[2] == 1) ||
                 (sourceOutcode[3] == 1 && targetOutcode[3] == 1)) {
-            console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
-            console.log('(',esx,esy,')','(',etx,ety,')', x1_, y1_, x2_,y2_);
+            // console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
+            // console.log('(',esx,esy,')','(',etx,ety,')', x1_, y1_, x2_,y2_);
             return false;
         } else {
             //clipping the line segment
@@ -273,13 +288,13 @@ ccNetViz.quadtree = function(points, edges) {
 
     function intersectsExtension(intersectionPointCoord, x1_,y1_,x2_,y2_, outsideTempNode, insideTempNode) {
         if(intersectionPointCoord.y > y2_ || intersectionPointCoord.y < y1_ || intersectionPointCoord.x < x1_ || intersectionPointCoord.x > x2_) {
-            console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
-            console.info('%c intersection outside', 'background:red; color:white', '(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+            // console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            // console.info('%c intersection outside', 'background:red; color:white', '(', intersectionPointCoord.x,intersectionPointCoord.y,')');
             //intersection point lies outside the bounding box
             return true;
         } else {
-            console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
-            console.info('%c intersection inside', 'background:blue; color:white', '(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+            // console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            // console.info('%c intersection inside', 'background:blue; color:white', '(', intersectionPointCoord.x,intersectionPointCoord.y,')');
             return false;
         }
         //intersection point lies inside/on the bounding box
@@ -321,11 +336,11 @@ ccNetViz.quadtree = function(points, edges) {
                 //put the q-edge here
                 if(typeof root.QEdges == "undefined") root.QEdges = [];
                 root.QEdges.push(edge);
-                console.log("%c Edge added", 'background: blue; color: white');
+                // console.log("%c Edge added", 'background: blue; color: white');
                 if(root.point == null) {
-                    console.log("%c Source:", 'background: red; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->NULL', x1_,y1_,x2_,y2_);
+                    // console.log("%c Source:", 'background: red; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->NULL', x1_,y1_,x2_,y2_);
                 } else {
-                    console.log("%c Source:", 'background: orange; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
+                    // console.log("%c Source:", 'background: orange; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
                 }
             } else {
                 // console.log("%c Recurse into an inner quadrant", 'background: blue; color: white');
@@ -339,9 +354,22 @@ ccNetViz.quadtree = function(points, edges) {
             // do nothing
     }
 
-    function findEdge() {
-        return "nearest edge is";
+    function sqr(x) { return x * x }
+    
+    function dist2(v, w) { return sqr(v.x - w.x) + sqr(v.y - w.y) }
+    
+    function distToSegmentSquared(p, v, w) {
+      var l2 = dist2(v, w);
+      if (l2 == 0) return dist2(p, v);
+      var t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+      if (t < 0) return dist2(p, v);
+      if (t > 1) return dist2(p, w);
+      return dist2(p, { x: v.x + t * (w.x - v.x),
+                        y: v.y + t * (w.y - v.y) });
     }
+    
+    function distToSegment(p, v, w) { return Math.sqrt(distToSegmentSquared(p, v, w)); }
+
     var root = create();    //creates a node, as this is the first node for the constructor call, it's called the root
 
     // root.visit(callback) 
@@ -353,12 +381,36 @@ ccNetViz.quadtree = function(points, edges) {
     };
     root.find = function(x, y)  {return findNode(root, x, y, x1_, y1_, x2_, y2_);};
 
+    //currently, it only returns the closest edge in the leaf node that contains the point of interest
+    // TODO : compare with edges in the adjacent quadrants/nodes too
     root.findEdge = function(x,y) {
-        // return findEdge(root, x, y, x1_, y1_, x2_, y2_);
-        return visit(function(node, x1_, y1_, x2_, y2_) {
-            // console.log("first do this", node, x1_, y1_, x2_, y2_);
-
-        }, root, x1_, y1_, x2_, y2_);
+        var closestEdgeFinal = null;
+        visit(function(node, x1_, y1_, x2_, y2_) {
+            var point = {};
+            point.x = x;
+            point.y = y;
+            var outCode = computeOutcode(point, x1_,y1_,x2_,y2_);
+            //if the point lies INSIDE the current node
+            if(outCode == 0) {
+                //find all the edges stored in this node
+                if(typeof node.QEdges !== "undefined") {
+                    //find the closest edge
+                    var minDistance = Infinity, closestEdge;
+                    for (var i = node.QEdges.length - 1; i >= 0; i--) {
+                        var tempDistance;
+                        tempDistance = distToSegment({x:x, y:y}, node.QEdges[i].source, node.QEdges[i].target);
+                        if(tempDistance < minDistance) {
+                            minDistance = tempDistance;
+                            closestEdge = node.QEdges[i];
+                        }
+                    };
+                    closestEdgeFinal = closestEdge;
+                }
+            } else {
+                return "err";
+            }
+        },root, x1_, y1_, x2_, y2_);
+        return closestEdgeFinal;
     };
 
     for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
