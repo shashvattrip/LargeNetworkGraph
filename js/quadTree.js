@@ -1,4 +1,5 @@
 ccNetViz.quadtree = function(points, edges) {
+    console.log(" Quadtree constructor called");
     var d, xs, ys, i, n, x1_, y1_, x2_, y2_;
     var isEdge = false;
     //d = point
@@ -195,13 +196,15 @@ ccNetViz.quadtree = function(points, edges) {
 
         //if both the nodes are inside the bounding box
         if(sourceOutcode == 0000 && targetOutcode == 0000) {
-            // console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
+            console.log("%c NOT intersects because edge is entirely inside the quadrant", 'background: yellow; color: red');
+            console.log('(',esx,esy,')','(',etx,ety,')', x1_, y1_, x2_,y2_);
             return false;
         } else if((sourceOutcode[0] == 1 && targetOutcode[0] == 1) || 
                 (sourceOutcode[1] == 1 && targetOutcode[1] == 1) ||
                 (sourceOutcode[2] == 1 && targetOutcode[2] == 1) ||
                 (sourceOutcode[3] == 1 && targetOutcode[3] == 1)) {
-            // console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
+            console.log("%c NOT intersects because edge is entirely outside the quadrant, and does not intersect any edge", 'background: yellow; color: red');
+            console.log('(',esx,esy,')','(',etx,ety,')', x1_, y1_, x2_,y2_);
             return false;
         } else {
             //clipping the line segment
@@ -223,31 +226,40 @@ ccNetViz.quadtree = function(points, edges) {
             } 
 
             var intersectionPointCoord = {};
+            var flag = false;
             //find out the intersection point on the edge
             //if the node selected is above the top edge
-            if(codeOut[0] == 1) {
+            if(codeOut[0] == 1 && flag == false) {
                 intersectionPointCoord.x = outsideTempNode.x + (y2_ - outsideTempNode.y) * ((insideTempNode.x - outsideTempNode.x) / (insideTempNode.y - outsideTempNode.y));
                 intersectionPointCoord.y = y2_;
+                if(!intersectsExtension(intersectionPointCoord, x1_,y1_,x2_,y2_, outsideTempNode, insideTempNode)) flag = true;
             } 
             //if the node selected is below the bottom edge
-            else if(codeOut[1] == 1){
+            if(codeOut[1] == 1 && flag == false){
                 intersectionPointCoord.x = outsideTempNode.x + (y1_ - outsideTempNode.y) * ((insideTempNode.x - outsideTempNode.x) / (insideTempNode.y - outsideTempNode.y));
                 intersectionPointCoord.y = y1_;
+                if(!intersectsExtension(intersectionPointCoord, x1_,y1_,x2_,y2_, outsideTempNode, insideTempNode)) flag = true;
             }
             //if the node selected is right of the right edge
-            else if(codeOut[2] == 1){
+            if(codeOut[2] == 1 && flag == false){
                 intersectionPointCoord.y = outsideTempNode.y + (x2_ - outsideTempNode.x) * ((insideTempNode.y - outsideTempNode.y) / (insideTempNode.x - outsideTempNode.x));
                 intersectionPointCoord.x = x2_;
+                if(!intersectsExtension(intersectionPointCoord, x1_,y1_,x2_,y2_, outsideTempNode, insideTempNode)) flag = true;
             }
             //if the node selected is left of the left edge
-            else if(codeOut[3] == 1){
+            if(codeOut[3] == 1 && flag == false){
                 intersectionPointCoord.y = outsideTempNode.y + (x1_ - outsideTempNode.x) * ((insideTempNode.y - outsideTempNode.y) / (insideTempNode.x - outsideTempNode.x));
                 intersectionPointCoord.x = x1_;
+                if(!intersectsExtension(intersectionPointCoord, x1_,y1_,x2_,y2_, outsideTempNode, insideTempNode)) flag = true;
             }
             // console.log('(', outsideTempNode.x,outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
             // console.log('(', intersectionPointCoord.x,intersectionPointCoord.y,')');
-
-            return true;
+            // if(intersectionPointCoord.y > y2_ || intersectionPointCoord.y < y1_ || intersectionPointCoord.x < x1_ || intersectionPointCoord.x > x2_) {
+            //     console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            //     console.info('(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+            //     return false;
+            // }
+            return flag;
             // computeOutcode(intersectionPointCoord, x1_,y1_,x2_,y2_);
 
         }
@@ -257,6 +269,20 @@ ccNetViz.quadtree = function(points, edges) {
         // b3 == 1 for both OR
 
 
+    }
+
+    function intersectsExtension(intersectionPointCoord, x1_,y1_,x2_,y2_, outsideTempNode, insideTempNode) {
+        if(intersectionPointCoord.y > y2_ || intersectionPointCoord.y < y1_ || intersectionPointCoord.x < x1_ || intersectionPointCoord.x > x2_) {
+            console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            console.info('%c intersection outside', 'background:red; color:white', '(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+            //intersection point lies outside the bounding box
+            return true;
+        } else {
+            console.info('(', outsideTempNode.x, outsideTempNode.y,')', '(', insideTempNode.x,insideTempNode.y,')', '(',x1_,y1_,')', '(',x2_,y2_,')');
+            console.info('%c intersection inside', 'background:blue; color:white', '(', intersectionPointCoord.x,intersectionPointCoord.y,')');
+            return false;
+        }
+        //intersection point lies inside/on the bounding box
     }
 
     function computeOutcode(point, x1_, y1_, x2_, y2_) {
@@ -296,10 +322,10 @@ ccNetViz.quadtree = function(points, edges) {
                 if(typeof root.QEdges == "undefined") root.QEdges = [];
                 root.QEdges.push(edge);
                 console.log("%c Edge added", 'background: blue; color: white');
-                if(typeof root.point !== "undefined") {
-                    console.log("Source:", edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
+                if(root.point == null) {
+                    console.log("%c Source:", 'background: red; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->NULL', x1_,y1_,x2_,y2_);
                 } else {
-                    console.log("Source:", edge.source.label, "Target:", edge.target.label, 'to node --->', "contains no point");
+                    console.log("%c Source:", 'background: orange; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
                 }
             } else {
                 // console.log("%c Recurse into an inner quadrant", 'background: blue; color: white');
@@ -337,6 +363,38 @@ ccNetViz.quadtree = function(points, edges) {
 
     for (i = 0; i < n; i++) insert(root, points[i], xs[i], ys[i], x1_, y1_, x2_, y2_);
     --i;
+
+    function normalizeNodes(root) {
+        if(typeof root == "undefined") return;
+        if(root.leaf == false) {
+            // console.log(root);
+            if(root.nodes.length < 4) {
+                //find out what nodes are missing and add them as leaf nodes with null points
+                // console.log("add here");
+                if(typeof root.nodes[0] == "undefined") {
+                    root.nodes[0] = create();
+                }
+                if(typeof root.nodes[1] == "undefined") {
+                    root.nodes[1] = create();
+                }
+                if(typeof root.nodes[2] == "undefined") {
+                    root.nodes[2] = create();
+                }
+                if(typeof root.nodes[3] == "undefined") {
+                    root.nodes[3] = create();
+                }
+            }
+            if(root.nodes) {
+                normalizeNodes(root.nodes[0]);
+                normalizeNodes(root.nodes[1]);
+                normalizeNodes(root.nodes[2]);
+                normalizeNodes(root.nodes[3]);
+            }
+        }
+    }
+
+    normalizeNodes(root);
+
     if(typeof edges !== "undefined") {
         for (i = 0; i < edges.length; i++) {
             visit(function(node, x1_, y1_, x2_, y2_) {
