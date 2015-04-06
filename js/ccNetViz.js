@@ -324,11 +324,11 @@ ccNetViz = function(canvas, options) {
         if(typeof e == "undefined") return;
         // console.log(currentEdges);
         quadTree = ccNetViz.quadtree(currentNodes, currentEdges);
-        var _node = quadTree.find(e.x/canvas.width,1-e.y/canvas.height);
+        var _node = quadTree.find(e.clientX/canvas.width,1-e.clientY/canvas.height);
         console.log("closest Node :: ", _node);
         // console.log("%c Quadtree is", 'background: red; color:white', quadTree);
         //finding the nearest edge
-        var _edge = quadTree.findEdge(e.x/canvas.width,1-e.y/canvas.height);
+        var _edge = quadTree.findEdge(e.clientX/canvas.width,1-e.clientY/canvas.height);
         console.log("closest Edge :: ", _edge);
     }
 
