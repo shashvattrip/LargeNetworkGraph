@@ -32,7 +32,7 @@
 		One can observe that ALL leaf nodes have the edges stored in them that pass through the leaf nodes
 
 
-####	Finding nearest edge 
+####	Finding nearest edge	-	```Completed``` 
 
 
-####	Logging out the nearest edge
+####	Logging out the nearest edge	-	```Completed```
