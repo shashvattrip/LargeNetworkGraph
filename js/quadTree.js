@@ -327,8 +327,12 @@ ccNetViz.quadtree = function(points, edges) {
         // console.log("adding edge", edge.source.label, edge.target.label);
         //if(typeof root == "undefined") return false;
         //check it the node intersects the edge
+        // if no
+            // do nothing
+        if(!intersects(edge, root, x1_,y1_,x2_,y2_)) {
+            return;
+        } else {
         //if yes
-        if(intersects(edge, root, x1_,y1_,x2_,y2_)) {
             //find the leaf node to put the edge in
             //check if curr node is the leaf node
             // if(root.leaf == true && root.nodes.length==0 && typeof root.point !== "undefined") {
@@ -347,11 +351,7 @@ ccNetViz.quadtree = function(points, edges) {
                 //recurse to a leaf node? What to do here?
                 
             }
-        } else {
-
         }
-        // if no
-            // do nothing
     }
 
     function sqr(x) { return x * x }
