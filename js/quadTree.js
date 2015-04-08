@@ -349,7 +349,7 @@ ccNetViz.quadtree = function(points, edges) {
             } else {
                 // console.log("%c Recurse into an inner quadrant", 'background: blue; color: white');
                 //recurse to a leaf node? What to do here?
-                
+                return;
             }
         }
     }
