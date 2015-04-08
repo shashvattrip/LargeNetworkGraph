@@ -428,31 +428,34 @@ ccNetViz.quadtree = function(points, edges) {
 
             //find out what nodes are missing and add them as leaf nodes with null points
             // console.log("add here");
+            var skip = [false,false,false,false];
             if(typeof root.nodes[0] == "undefined") {
                 root.nodes[0] = create();
+                skip[0] = true;
             }
             if(typeof root.nodes[1] == "undefined") {
                 root.nodes[1] = create();
+                skip[1] = true;
             }
             if(typeof root.nodes[2] == "undefined") {
                 root.nodes[2] = create();
+                skip[2] = true;
             }
             if(typeof root.nodes[3] == "undefined") {
                 root.nodes[3] = create();
+                skip[3] = true;
             }
-            //recurse into node
-            if(root.nodes) {
-                normalizeNodes(root.nodes[0]);
-                normalizeNodes(root.nodes[1]);
-                normalizeNodes(root.nodes[2]);
-                normalizeNodes(root.nodes[3]);
-            }
+            for (var i = 3 ; i >= 0; i--) {
+                if(!skip[i]) normalizeNodes(root.nodes[i]);
+            };
+
+        } else {
+            return;
         }
     }
 
-    normalizeNodes(root);
-
     if(typeof edges !== "undefined") {
+        normalizeNodes(root);
         for (i = 0; i < edges.length; i++) {
             visit(function(node, x1_, y1_, x2_, y2_) {
                 // console.log("first do this", node, x1_, y1_, x2_, y2_);
