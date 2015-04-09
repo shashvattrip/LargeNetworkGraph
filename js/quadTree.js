@@ -341,16 +341,14 @@ ccNetViz.quadtree = function(points, edges) {
                 if(typeof root.QEdges == "undefined") root.QEdges = [];
                 root.QEdges.push(edge);
                 // console.log("%c Edge added", 'background: blue; color: white');
-                if(root.point == null) {
-                    // console.log("%c Source:", 'background: red; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->NULL', x1_,y1_,x2_,y2_);
-                } else {
-                    // console.log("%c Source:", 'background: orange; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
-                }
-            } else {
-                // console.log("%c Recurse into an inner quadrant", 'background: blue; color: white');
-                //recurse to a leaf node? What to do here?
-                return;
+                // return;
+                // if(root.point == null) {
+                //     // console.log("%c Source:", 'background: red; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->NULL', x1_,y1_,x2_,y2_);
+                // } else {
+                //     // console.log("%c Source:", 'background: orange; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
+                // }
             }
+            
         }
     }
 
