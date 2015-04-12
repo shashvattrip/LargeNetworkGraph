@@ -99,19 +99,6 @@ ccNetViz.quadtree = function(points, edges) {
         insert(n, d, x, y, x1, y1, x2, y2);
     }
 
-    function findEdge(root, x, y, x1_, y1_, x2_, y2_) {
-        //find the quadrant in which this point lies
-        if(root.leaf == true) {
-
-        } else {
-            //recurse to a root
-            var nodes = root.nodes;
-
-        }
-        //search for edges stored in this quadrant
-
-        return closestPoint;
-    }
 
     // findNode(root, x, y, x1_, y1_, x2_, y2_)
     function findNode(root, x, y, x0, y0, x3, y3) {
@@ -330,7 +317,7 @@ ccNetViz.quadtree = function(points, edges) {
         // if no
             // do nothing
         if(!intersects(edge, root, x1_,y1_,x2_,y2_)) {
-            return;
+            return false;
         } else {
         //if yes
             //find the leaf node to put the edge in
@@ -340,6 +327,7 @@ ccNetViz.quadtree = function(points, edges) {
                 //put the q-edge here
                 if(typeof root.QEdges == "undefined") root.QEdges = [];
                 root.QEdges.push(edge);
+                return true;
                 // console.log("%c Edge added", 'background: blue; color: white');
                 // return;
                 // if(root.point == null) {
@@ -347,7 +335,24 @@ ccNetViz.quadtree = function(points, edges) {
                 // } else {
                 //     // console.log("%c Source:", 'background: orange; color: white', edge.source.label, "Target:", edge.target.label, 'to node --->', root.point.label);
                 // }
+            } else {
+                if(typeof root.nodes[0] == "undefined") {
+                    root.nodes[0] = create();
+                }
+                if(typeof root.nodes[1] == "undefined") {
+                    root.nodes[1] = create();
+                }
+                if(typeof root.nodes[2] == "undefined") {
+                    root.nodes[2] = create();
+                }
+                if(typeof root.nodes[3] == "undefined") {
+                    root.nodes[3] = create();
+                }
+                return false;
             }
+
+            //if it is not a leaf node, then it'll contain 4 quadrants.
+            //create child nodes if they don't exist
             
         }
     }
@@ -403,9 +408,14 @@ ccNetViz.quadtree = function(points, edges) {
                         }
                     };
                     closestEdgeFinal = closestEdge;
+                    return true;
+                } else {
+                    //traverse child nodes
+                    return false;
                 }
             } else {
-                return "err";
+                //don't traverse root's children
+                return true;
             }
         },root, x1_, y1_, x2_, y2_);
         return closestEdgeFinal;
@@ -453,11 +463,11 @@ ccNetViz.quadtree = function(points, edges) {
     }
 
     if(typeof edges !== "undefined") {
-        normalizeNodes(root);
+        // normalizeNodes(root);
         for (i = 0; i < edges.length; i++) {
             visit(function(node, x1_, y1_, x2_, y2_) {
                 // console.log("first do this", node, x1_, y1_, x2_, y2_);
-                addEdge(node, x1_, y1_, x2_, y2_, edges[i]);
+                return addEdge(node, x1_, y1_, x2_, y2_, edges[i]);
             }, root, x1_, y1_, x2_, y2_);
         }
         --i;
